@@ -34,6 +34,7 @@ public class SlideLockView extends View {
     private int mTipsTextColor;
     private Rect mTipsTextRect = new Rect();
 
+    private int height, with;
     private float mLocationX;
     private boolean mIsDragable = false;
     private OnLockListener mLockListener;
@@ -64,6 +65,12 @@ public class SlideLockView extends View {
         init(context);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        height = getMeasuredHeight();
+        with = getMeasuredWidth();
+    }
 
     private void init(Context context) {
         mPaint = new Paint();
@@ -99,12 +106,13 @@ public class SlideLockView extends View {
         canvas.drawText(mTipText, x, y, mPaint);
 
         int rightMax = getWidth() - mLockRadius * 2;
+        // 保证滑动图片绘制居中 (height / 2 - mLockRadius)
         if (mLocationX < 0) {
-            canvas.drawBitmap(mLockBitmap, 0, 0, mPaint);
+            canvas.drawBitmap(mLockBitmap, 0, height / 2 - mLockRadius, mPaint);
         } else if (mLocationX > rightMax) {
-            canvas.drawBitmap(mLockBitmap, rightMax, 0, mPaint);
+            canvas.drawBitmap(mLockBitmap, rightMax, height / 2 - mLockRadius, mPaint);
         } else {
-            canvas.drawBitmap(mLockBitmap, mLocationX, 0, mPaint);
+            canvas.drawBitmap(mLockBitmap, mLocationX, height / 2 - mLockRadius, mPaint);
         }
 
     }
@@ -134,6 +142,12 @@ public class SlideLockView extends View {
                     mIsDragable = false;
                 }
                 return true;
+            }
+            case MotionEvent.ACTION_CANCEL: {// 当图片过小, 这个方法可以很好重置,保证用户体验流畅
+                if (!mIsDragable)
+                    return true;
+                resetLock();
+                break;
             }
             case MotionEvent.ACTION_MOVE: {
 
