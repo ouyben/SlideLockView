@@ -15,8 +15,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import static android.content.ContentValues.TAG;
-
 /**
  * TODO :
  * Created by owen
@@ -24,6 +22,8 @@ import static android.content.ContentValues.TAG;
  */
 
 public class SlideLockView extends View {
+
+    private static final String TAG = "SlideLockView";
 
     private Bitmap mLockBitmap;
     private int mLockDrawableId;
@@ -128,13 +128,12 @@ public class SlideLockView extends View {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN: {
+            case MotionEvent.ACTION_DOWN://开始触摸
                 float xPos = event.getX();
                 float yPos = event.getY();
                 if (isTouchLock(xPos, yPos)) {
-                    Log.e(TAG, "onTouchEvent: 触摸目标");
+                    Log.d(TAG, "触摸目标");
                     mLocationX = xPos - mLockRadius;
                     mIsDragable = true;
                     invalidate();
@@ -142,15 +141,15 @@ public class SlideLockView extends View {
                     mIsDragable = false;
                 }
                 return true;
-            }
-            case MotionEvent.ACTION_CANCEL: {// 当图片过小, 这个方法可以很好重置,保证用户体验流畅
+//                break;
+            case MotionEvent.ACTION_CANCEL://手势被取消了
+                Log.e(TAG, "抬起手指");
                 if (!mIsDragable)
                     return true;
                 resetLock();
                 break;
-            }
-            case MotionEvent.ACTION_MOVE: {
-
+            case MotionEvent.ACTION_MOVE://移动
+                // 如果不在焦点
                 if (!mIsDragable)
                     return true;
 
@@ -165,18 +164,23 @@ public class SlideLockView extends View {
                     if (mLockListener != null) {
                         mLockListener.onOpenLockSuccess();
                     }
-                    Log.e("AnimaterListener", "解锁成功");
+                    Log.e(TAG, "解锁成功");
                 }
-
                 return true;
-            }
-            case MotionEvent.ACTION_UP: {
+//                break;
+            case MotionEvent.ACTION_UP://抬起了手指
+                Log.e(TAG, "抬起手指");
                 if (!mIsDragable)
                     return true;
                 resetLock();
                 break;
-            }
+            case MotionEvent.ACTION_OUTSIDE://超出了正常的UI边界
+
+                break;
+            default:
+                break;
         }
+
         return super.onTouchEvent(event);
     }
 

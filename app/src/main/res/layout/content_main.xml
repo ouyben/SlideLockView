@@ -14,17 +14,9 @@
     tools:context="com.ouyben.slidelockview.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <com.ouyben.slidelockview.SlideLockView
-        android:id="@+id/slideLockView"
+    <ListView
+        android:id="@+id/listview"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/shape_slide_lock_bg"
-        app:lock_drawable="@mipmap/lock_icon"
-        app:lock_radius="30dp"
-        app:lock_tips_tx="滑动解锁"
-        app:lock_tips_tx_color="#ffffff"
-        app:locl_tips_tx_size="18sp"/>
+        android:layout_height="wrap_content"></ListView>
 
 </RelativeLayout>
