@@ -32,6 +32,8 @@ public class SlideLockView extends TextView {
     private float mLocationX;
     private boolean mIsDragable = false;
     private OnLockListener mLockListener;
+    private OnTouchListener mOnTouchListener;
+
 
     public SlideLockView(Context context) {
         this(context, null);
@@ -68,9 +70,10 @@ public class SlideLockView extends TextView {
         mPaint.setAntiAlias(true);
 
         mLockBitmap = BitmapFactory.decodeResource(context.getResources(), mLockDrawableId);
+        // 将图片进行缩小或者放大
         int oldSize = mLockBitmap.getHeight();
         int newSize = mLockRadius * 2;
-        float scale = newSize * 1.0f / oldSize;
+        float scale = newSize * 1.0f / oldSize;// 缩放值
         Matrix matrix = new Matrix();
         matrix.setScale(scale, scale);
         mLockBitmap = Bitmap.createBitmap(mLockBitmap, 0, 0, oldSize, oldSize, matrix, true);
@@ -107,8 +110,12 @@ public class SlideLockView extends TextView {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        int rightMax = getWidth() - mLockRadius * 2;// 右滑成功距离
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN://开始触摸
+                callTouch(true);
                 float xPos = event.getX();
                 float yPos = event.getY();
                 if (isTouchLock(xPos, yPos)) {
@@ -120,21 +127,30 @@ public class SlideLockView extends TextView {
                     mIsDragable = false;
                 }
                 return true;
-//                break;
+            //                break;
             case MotionEvent.ACTION_CANCEL://手势被取消了
-                Log.e(TAG, "抬起手指");
+                Log.e(TAG, "手势被取消");
+                callTouch(false);
                 if (!mIsDragable)
                     return true;
                 resetLock();
                 break;
             case MotionEvent.ACTION_MOVE://移动
+                Log.e(TAG, "手势移动");
                 // 如果不在焦点
                 if (!mIsDragable)
                     return true;
 
-                int rightMax = getWidth() - mLockRadius * 2;
                 resetLocationX(event.getX(), rightMax);
                 invalidate();
+
+                return true;
+            //                break;
+            case MotionEvent.ACTION_UP://抬起了手指
+                callTouch(false);
+                Log.e(TAG, "抬起手指");
+                if (!mIsDragable)
+                    return true;
 
                 if (mLocationX >= rightMax) {
                     mIsDragable = false;
@@ -145,22 +161,26 @@ public class SlideLockView extends TextView {
                     }
                     Log.e(TAG, "解锁成功");
                 }
-                return true;
-//                break;
-            case MotionEvent.ACTION_UP://抬起了手指
-                Log.e(TAG, "抬起手指");
-                if (!mIsDragable)
-                    return true;
                 resetLock();
                 break;
             case MotionEvent.ACTION_OUTSIDE://超出了正常的UI边界
-
+                Log.e(TAG, "超出边界");
                 break;
             default:
                 break;
         }
 
         return super.onTouchEvent(event);
+    }
+
+    /**
+     * TODO: 返回是否在触摸该控件
+     *
+     * @param isTouch
+     */
+    private void callTouch(boolean isTouch) {
+        if (mOnTouchListener != null)
+            mOnTouchListener.onTouch(isTouch);
     }
 
     /**
@@ -212,6 +232,15 @@ public class SlideLockView extends TextView {
 
     public interface OnLockListener {
         void onOpenLockSuccess();
+    }
+
+    public void setOnTouchListener(OnTouchListener onTouchListener) {
+        mOnTouchListener = onTouchListener;
+    }
+
+    // TODO: 是否在滑动
+    public interface OnTouchListener {
+        void onTouch(boolean isTouch);
     }
 
 }
