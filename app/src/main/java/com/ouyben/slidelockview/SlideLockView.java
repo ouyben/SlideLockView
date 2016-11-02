@@ -6,14 +6,12 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
+import android.widget.TextView;
 
 /**
  * TODO :
@@ -21,7 +19,7 @@ import android.view.View;
  * on 2016-10-10.
  */
 
-public class SlideLockView extends View {
+public class SlideLockView extends TextView {
 
     private static final String TAG = "SlideLockView";
 
@@ -29,10 +27,6 @@ public class SlideLockView extends View {
     private int mLockDrawableId;
     private Paint mPaint;
     private int mLockRadius;
-    private String mTipText;
-    private int mTipsTextSize;
-    private int mTipsTextColor;
-    private Rect mTipsTextRect = new Rect();
 
     private int height, with;
     private float mLocationX;
@@ -52,9 +46,6 @@ public class SlideLockView extends View {
         TypedArray tp = context.obtainStyledAttributes(attrs, R.styleable.SlideLockView, defStyleAttr, 0);
         mLockDrawableId = tp.getResourceId(R.styleable.SlideLockView_lock_drawable, -1);
         mLockRadius = tp.getDimensionPixelOffset(R.styleable.SlideLockView_lock_radius, 1);
-        mTipText = tp.getString(R.styleable.SlideLockView_lock_tips_tx);
-        mTipsTextSize = tp.getDimensionPixelOffset(R.styleable.SlideLockView_locl_tips_tx_size, 12);
-        mTipsTextColor = tp.getColor(R.styleable.SlideLockView_lock_tips_tx_color, Color.BLACK);
 
         tp.recycle();
 
@@ -75,8 +66,6 @@ public class SlideLockView extends View {
     private void init(Context context) {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(mTipsTextSize);
-        mPaint.setColor(mTipsTextColor);
 
         mLockBitmap = BitmapFactory.decodeResource(context.getResources(), mLockDrawableId);
         int oldSize = mLockBitmap.getHeight();
@@ -94,17 +83,7 @@ public class SlideLockView extends View {
      */
     @Override
     protected void onDraw(Canvas canvas) {
-
-        canvas.getClipBounds(mTipsTextRect);
-        int cHeight = mTipsTextRect.height();
-        int cWidth = mTipsTextRect.width();
-        mPaint.setTextAlign(Paint.Align.LEFT);
-        mPaint.setColor(mTipsTextColor);// 重绘字体颜色
-        mPaint.getTextBounds(mTipText, 0, mTipText.length(), mTipsTextRect);
-        float x = cWidth / 2f - mTipsTextRect.width() / 2f - mTipsTextRect.left;
-        float y = cHeight / 2f + mTipsTextRect.height() / 2f - mTipsTextRect.bottom;
-        canvas.drawText(mTipText, x, y, mPaint);
-
+        super.onDraw(canvas);
         int rightMax = getWidth() - mLockRadius * 2;
         // 保证滑动图片绘制居中 (height / 2 - mLockRadius)
         if (mLocationX < 0) {
@@ -235,19 +214,4 @@ public class SlideLockView extends View {
         void onOpenLockSuccess();
     }
 
-    public String getTipText() {
-        return mTipText;
-    }
-
-    public void setTipText(String tipText) {
-        mTipText = tipText;
-    }
-
-    public int getTipsTextColor() {
-        return mTipsTextColor;
-    }
-
-    public void setTipsTextColor(int tipsTextColor) {
-        mTipsTextColor = tipsTextColor;
-    }
 }

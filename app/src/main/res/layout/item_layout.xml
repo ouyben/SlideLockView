@@ -13,7 +13,8 @@
         android:background="@drawable/shape_slide_lock_bg"
         app:lock_drawable="@mipmap/lock_icon"
         app:lock_radius="30dp"
-        app:lock_tips_tx="滑动解锁"
-        app:lock_tips_tx_color="#ffffff"
-        app:locl_tips_tx_size="18sp"/>
+        android:text="滑动解锁"
+        android:gravity="center"
+        android:textColor="#ffffff"
+       />
 </LinearLayout>

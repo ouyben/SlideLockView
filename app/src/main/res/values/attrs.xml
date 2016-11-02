@@ -3,8 +3,5 @@
     <declare-styleable name="SlideLockView">
         <attr name="lock_drawable" format="reference"/>
         <attr name="lock_radius" format="dimension|reference"/>
-        <attr name="lock_tips_tx" format="string|reference"/>
-        <attr name="locl_tips_tx_size" format="dimension|reference"/>
-        <attr name="lock_tips_tx_color" format="color|reference"/>
     </declare-styleable>
 </resources>
